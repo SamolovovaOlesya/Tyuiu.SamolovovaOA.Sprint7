@@ -15,7 +15,7 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5.Lib
             public decimal TotalValue => Quantity * UnitPrice;
         }
 
-        //CSV 
+        
         public List<Product> LoadFromCsv(string filePath)
         {
             var result = new List<Product>();
@@ -25,7 +25,7 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5.Lib
 
             var lines = File.ReadAllLines(filePath);
 
-            for (int i = 1; i < lines.Length; i++) // пропускаем заголовок
+            for (int i = 1; i < lines.Length; i++) 
             {
                 var parts = lines[i].Split(';');
                 if (parts.Length < 5) continue;
@@ -65,7 +65,7 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5.Lib
             File.WriteAllLines(filePath, lines);
         }
 
-        //ПОИСК
+        
         public List<Product> Search(List<Product> products, string query)
         {
             if (string.IsNullOrWhiteSpace(query))
@@ -80,19 +80,19 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5.Lib
                 .ToList();
         }
 
-        //ФИЛЬТР
+
         public List<Product> FilterByMinQuantity(List<Product> products, int minQty)
         {
             return products.Where(p => p.Quantity >= minQty).ToList();
         }
 
-        //СОРТИРОВКА
+        
         public List<Product> SortByTotalValueDesc(List<Product> products)
         {
             return products.OrderByDescending(p => p.TotalValue).ToList();
         }
 
-        //СТАТИСТИКА
+
         public (int Count, int QtySum, double QtyAvg, int QtyMin, int QtyMax, decimal ValueSum)
             CalculateStatistics(List<Product> products)
         {

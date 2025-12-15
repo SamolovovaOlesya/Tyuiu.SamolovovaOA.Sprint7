@@ -63,7 +63,7 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5.Test
 
             var result = ds.SortByTotalValueDesc(data);
 
-            Assert.AreEqual("P1", result[0].ProductCode); // 1000
+            Assert.AreEqual("P1", result[0].ProductCode); 
         }
 
         [TestMethod]
