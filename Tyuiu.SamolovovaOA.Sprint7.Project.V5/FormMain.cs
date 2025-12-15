@@ -4,7 +4,7 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
     {
         public FormMain()
         {
-            InitializeComponent();
+            InitializeComponent(); 
 
             Text = "Оптовая база — управление товарами";
             toolStripStatusLabelInfo_SOA.Text = "Готово";

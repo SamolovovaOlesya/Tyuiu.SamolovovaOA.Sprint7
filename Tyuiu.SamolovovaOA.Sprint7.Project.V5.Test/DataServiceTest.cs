@@ -9,7 +9,7 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5.Test
 
         private List<DataService.Product> GetDemoData() => new()
         {
-            new DataService.Product
+            new DataService.Product 
             {
                 ProductCode = "P1",
                 ProductName = "Сахар",

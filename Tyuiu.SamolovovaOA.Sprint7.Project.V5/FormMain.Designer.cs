@@ -46,7 +46,7 @@
             base.Dispose(disposing);
         }
 
-        private void InitializeComponent()
+        private void InitializeComponent() 
         {
             this.components = new System.ComponentModel.Container();
 
