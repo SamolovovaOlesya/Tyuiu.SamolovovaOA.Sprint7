@@ -63,7 +63,7 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5.Lib
             }
 
             File.WriteAllLines(filePath, lines);
-        }
+        } 
 
         
         public List<Product> Search(List<Product> products, string query)
@@ -80,7 +80,7 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5.Lib
                 .ToList();
         }
 
-
+ 
         public List<Product> FilterByMinQuantity(List<Product> products, int minQty)
         {
             return products.Where(p => p.Quantity >= minQty).ToList();
@@ -107,6 +107,6 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5.Lib
                 products.Max(p => p.Quantity),
                 products.Sum(p => p.TotalValue)
             );
-        }
+        } //h
     }
 }

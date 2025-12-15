@@ -7,7 +7,7 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
             InitializeComponent(); 
 
             Text = "Оптовая база — управление товарами";
-            toolStripStatusLabelInfo_SOA.Text = "Готово";
+            toolStripStatusLabelInfo_SOA.Text = "Готово";  
         }
 
         private void menuItemExit_SOA_Click(object sender, EventArgs e)

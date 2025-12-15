@@ -32,7 +32,7 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5.Test
             }
         };
 
-        [TestMethod]
+        [TestMethod] 
         public void Search_ShouldFindByName()
         {
             var ds = GetService();
@@ -63,7 +63,7 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5.Test
 
             var result = ds.SortByTotalValueDesc(data);
 
-            Assert.AreEqual("P1", result[0].ProductCode); 
+            Assert.AreEqual("P1", result[0].ProductCode);  
         }
 
         [TestMethod]
