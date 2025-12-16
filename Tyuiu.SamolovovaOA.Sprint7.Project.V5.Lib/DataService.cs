@@ -107,6 +107,38 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5.Lib
                 products.Max(p => p.Quantity),
                 products.Sum(p => p.TotalValue)
             );
-        } //h
+        }
+
+
+        public List<Product> GetDemoProducts()
+        {
+            return new List<Product>
+    {
+        new Product
+        {
+            ProductCode = "P001",
+            ProductName = "Гайки",
+            Quantity = 100,
+            UnitPrice = 5.50m,
+            Notes = "Металлические"
+        },
+        new Product
+        {
+            ProductCode = "P002",
+            ProductName = "Болты",
+            Quantity = 50,
+            UnitPrice = 7.20m,
+            Notes = "Оцинкованные"
+        },
+        new Product
+        {
+            ProductCode = "P003",
+            ProductName = "Кабель",
+            Quantity = 20,
+            UnitPrice = 120.00m,
+            Notes = "ВВГнг 3x2.5"
+        }
+    };
+        }
     }
 }

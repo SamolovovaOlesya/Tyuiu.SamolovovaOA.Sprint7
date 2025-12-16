@@ -39,6 +39,10 @@
         private System.Windows.Forms.StatusStrip statusStripMain_SOA;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabelInfo_SOA;
 
+        private System.Windows.Forms.DataGridView dataGridViewProducts_SOA;
+        private System.Windows.Forms.Panel panelProductsActions_SOA;
+        private System.Windows.Forms.Button buttonFillDemo_SOA;
+
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -49,6 +53,10 @@
         private void InitializeComponent()    
         {
             this.components = new System.ComponentModel.Container();
+
+            dataGridViewProducts_SOA = new System.Windows.Forms.DataGridView();
+            panelProductsActions_SOA = new System.Windows.Forms.Panel();
+            buttonFillDemo_SOA = new System.Windows.Forms.Button();
 
             menuMain_SOA = new System.Windows.Forms.MenuStrip();
 
@@ -125,6 +133,27 @@
             toolStripStatusLabelInfo_SOA.Text = "Статус";
             statusStripMain_SOA.Items.Add(toolStripStatusLabelInfo_SOA);
 
+            dataGridViewProducts_SOA.AllowUserToAddRows = false;
+            dataGridViewProducts_SOA.Dock = System.Windows.Forms.DockStyle.Fill;
+            dataGridViewProducts_SOA.MultiSelect = false;
+            dataGridViewProducts_SOA.RowHeadersVisible = false;
+            dataGridViewProducts_SOA.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            dataGridViewProducts_SOA.Name = "dataGridViewProducts_SOA";
+
+            panelProductsActions_SOA.Dock = System.Windows.Forms.DockStyle.Bottom;
+            panelProductsActions_SOA.Height = 50;
+            panelProductsActions_SOA.Name = "panelProductsActions_SOA";
+
+            buttonFillDemo_SOA.Text = "Демо";
+            buttonFillDemo_SOA.Name = "buttonFillDemo_SOA";
+            buttonFillDemo_SOA.Width = 120;
+            buttonFillDemo_SOA.Height = 30;
+            buttonFillDemo_SOA.Left = 10;
+            buttonFillDemo_SOA.Top = 12;
+            buttonFillDemo_SOA.Click += buttonFillDemo_SOA_Click;
+
+            panelProductsActions_SOA.Controls.Add(buttonFillDemo_SOA);
+
             this.Text = "Оптовая база";
             this.ClientSize = new System.Drawing.Size(1000, 600);
             this.MinimumSize = new System.Drawing.Size(900, 550);
@@ -133,8 +162,13 @@
             this.Controls.Add(statusStripMain_SOA);
             this.Controls.Add(toolStripMain_SOA);
             this.Controls.Add(menuMain_SOA);
+            this.Controls.Add(dataGridViewProducts_SOA);
+            this.Controls.Add(panelProductsActions_SOA);
 
+            this.Load += FormMain_Load;
             this.MainMenuStrip = menuMain_SOA;
+
+
         }
     }
 }
