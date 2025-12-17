@@ -1,5 +1,8 @@
+using System.IO;
+using System.Linq;
 using System.ComponentModel;
 using Tyuiu.SamolovovaOA.Sprint7.Project.V5.Lib;
+
 namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
 {
     public partial class FormMain : Form
@@ -8,6 +11,7 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
         private BindingList<DataService.Product> products_SOA = new BindingList<DataService.Product>();
         private BindingSource productsSource_SOA = new BindingSource();
         private DataService dataService_SOA = new DataService();
+        private string currentFilePath_SOA = string.Empty;
         public FormMain()
         {
             InitializeComponent(); 
@@ -46,17 +50,73 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
 
         private void toolButtonOpen_SOA_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Открытие CSV будет реализовано позже.");
+            using OpenFileDialog ofd = new OpenFileDialog
+            {
+                Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*",
+                Title = "Открыть CSV"
+            };
+
+            if (ofd.ShowDialog() != DialogResult.OK)
+                return;
+
+            currentFilePath_SOA = ofd.FileName;
+
+            var loaded = dataService_SOA.LoadFromCsv(currentFilePath_SOA);
+
+            products_SOA = new BindingList<DataService.Product>(loaded);
+            productsSource_SOA.DataSource = products_SOA;
+
+            toolStripStatusLabelInfo_SOA.Text =
+                $"Открыт файл: {Path.GetFileName(currentFilePath_SOA)} (записей: {loaded.Count})";
         }
 
         private void toolButtonSave_SOA_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Сохранение CSV будет реализовано позже.");
+            if (products_SOA == null || products_SOA.Count == 0)
+            {
+                MessageBox.Show("Нет данных для сохранения.", "Сохранение",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            // Если файл ещё не выбран — спросим куда сохранить
+            if (string.IsNullOrWhiteSpace(currentFilePath_SOA))
+            {
+                using SaveFileDialog sfd = new SaveFileDialog
+                {
+                    Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*",
+                    Title = "Сохранить CSV",
+                    FileName = "products.csv"
+                };
+
+                if (sfd.ShowDialog() != DialogResult.OK)
+                    return;
+
+                currentFilePath_SOA = sfd.FileName;
+            }
+
+            dataService_SOA.SaveToCsv(currentFilePath_SOA, products_SOA.ToList());
+
+            toolStripStatusLabelInfo_SOA.Text =
+                $"Сохранено: {Path.GetFileName(currentFilePath_SOA)} (записей: {products_SOA.Count})";
         }
 
         private void toolButtonRefresh_SOA_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Обновление данных будет реализовано позже.");
+            if (string.IsNullOrWhiteSpace(currentFilePath_SOA) || !File.Exists(currentFilePath_SOA))
+            {
+                MessageBox.Show("Сначала открой CSV файл.", "Обновить",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            var loaded = dataService_SOA.LoadFromCsv(currentFilePath_SOA);
+
+            products_SOA = new BindingList<DataService.Product>(loaded);
+            productsSource_SOA.DataSource = products_SOA;
+
+            toolStripStatusLabelInfo_SOA.Text =
+                $"Обновлено: {Path.GetFileName(currentFilePath_SOA)} (записей: {loaded.Count})";
         }
 
         private void FormMain_Load(object sender, EventArgs e)
@@ -134,6 +194,7 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
                 products_SOA.Add(p);
             }
 
+            currentFilePath_SOA = string.Empty;
             toolStripStatusLabelInfo_SOA.Text = "Загружены демонстрационные данные";
         }
     }

@@ -139,6 +139,12 @@
             dataGridViewProducts_SOA.RowHeadersVisible = false;
             dataGridViewProducts_SOA.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             dataGridViewProducts_SOA.Name = "dataGridViewProducts_SOA";
+            dataGridViewProducts_SOA.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.None;
+            dataGridViewProducts_SOA.RowTemplate.Height = 22;
+            dataGridViewProducts_SOA.AllowUserToResizeRows = false;
+            dataGridViewProducts_SOA.BorderStyle = BorderStyle.None;
+            dataGridViewProducts_SOA.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            dataGridViewProducts_SOA.BackgroundColor = SystemColors.Window;
 
             panelProductsActions_SOA.Dock = System.Windows.Forms.DockStyle.Bottom;
             panelProductsActions_SOA.Height = 50;
@@ -159,10 +165,10 @@
             this.MinimumSize = new System.Drawing.Size(900, 550);
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 
+            this.Controls.Add(dataGridViewProducts_SOA);
             this.Controls.Add(statusStripMain_SOA);
             this.Controls.Add(toolStripMain_SOA);
             this.Controls.Add(menuMain_SOA);
-            this.Controls.Add(dataGridViewProducts_SOA);
             this.Controls.Add(panelProductsActions_SOA);
 
             this.Load += FormMain_Load;
