@@ -28,6 +28,10 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
 
             productsSource_SOA.DataSource = products_SOA;
             dataGridViewProducts_SOA.DataSource = productsSource_SOA;
+            dataGridViewProducts_SOA.ReadOnly = false;
+            dataGridViewProducts_SOA.EditMode = DataGridViewEditMode.EditOnKeystrokeOrF2;
+            dataGridViewProducts_SOA.AllowUserToAddRows = false;
+            dataGridViewProducts_SOA.AllowUserToDeleteRows = false;
 
             toolStripStatusLabelInfo_SOA.Text = "Таблица товаров готова";
         }
@@ -57,6 +61,9 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
         // ===== СОХРАНИТЬ =====
         private void toolButtonSave_SOA_Click(object sender, EventArgs e)
         {
+            dataGridViewProducts_SOA.EndEdit();
+            productsSource_SOA.EndEdit();
+
             if (products_SOA == null || products_SOA.Count == 0)
             {
                 MessageBox.Show("Нет данных для сохранения.", "Сохранение",
@@ -184,7 +191,8 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
             {
                 HeaderText = "Сумма",
                 DataPropertyName = nameof(DataService.Product.TotalValue),
-                Width = 110
+                Width = 110,
+                ReadOnly = true
             });
         }
     }
