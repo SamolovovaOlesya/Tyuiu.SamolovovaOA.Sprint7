@@ -28,10 +28,16 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
 
             productsSource_SOA.DataSource = products_SOA;
             dataGridViewProducts_SOA.DataSource = productsSource_SOA;
+            // редактирование разрешено
             dataGridViewProducts_SOA.ReadOnly = false;
             dataGridViewProducts_SOA.EditMode = DataGridViewEditMode.EditOnKeystrokeOrF2;
             dataGridViewProducts_SOA.AllowUserToAddRows = false;
             dataGridViewProducts_SOA.AllowUserToDeleteRows = false;
+
+            // события для автопересчёта и защиты от ошибок ввода
+            dataGridViewProducts_SOA.CellValueChanged += dataGridViewProducts_SOA_CellValueChanged;
+            dataGridViewProducts_SOA.CellEndEdit += dataGridViewProducts_SOA_CellEndEdit;
+            dataGridViewProducts_SOA.DataError += dataGridViewProducts_SOA_DataError;
 
             toolStripStatusLabelInfo_SOA.Text = "Таблица товаров готова";
         }
@@ -154,7 +160,8 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
             {
                 HeaderText = "Код",
                 DataPropertyName = nameof(DataService.Product.ProductCode),
-                Width = 90
+                Width = 90,
+                ReadOnly = true
             });
 
             dataGridViewProducts_SOA.Columns.Add(new DataGridViewTextBoxColumn
@@ -195,5 +202,34 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
                 ReadOnly = true
             });
         }
+        private void dataGridViewProducts_SOA_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0) return;
+
+            productsSource_SOA.ResetBindings(false);
+        }
+
+        private void dataGridViewProducts_SOA_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0) return;
+
+            productsSource_SOA.EndEdit();
+            productsSource_SOA.ResetBindings(false);
+
+            toolStripStatusLabelInfo_SOA.Text = "Изменения внесены (не забудьте сохранить)";
+        }
+
+        private void dataGridViewProducts_SOA_DataError(object sender, DataGridViewDataErrorEventArgs e)
+        {
+            MessageBox.Show(
+                "Некорректное значение. Проверьте ввод числа (кол-во или цена).",
+                "Ошибка ввода",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning
+            );
+
+            e.ThrowException = false;
+        }
+       
     }
 }
