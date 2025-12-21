@@ -1,4 +1,4 @@
-using System;
+п»їusing System;
 using System.IO;
 using System.Linq;
 using System.ComponentModel;
@@ -18,8 +18,8 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
         {
             InitializeComponent();
 
-            Text = "Оптовая база — управление товарами";
-            toolStripStatusLabelInfo_SOA.Text = "Готово";
+            Text = "РћРїС‚РѕРІР°СЏ Р±Р°Р·Р° вЂ” СѓРїСЂР°РІР»РµРЅРёРµ С‚РѕРІР°СЂР°РјРё";
+            toolStripStatusLabelInfo_SOA.Text = "Р“РѕС‚РѕРІРѕ";
         }
 
         private void FormMain_Load(object sender, EventArgs e)
@@ -28,27 +28,28 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
 
             productsSource_SOA.DataSource = products_SOA;
             dataGridViewProducts_SOA.DataSource = productsSource_SOA;
-            // редактирование разрешено
+
+            // СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ СЂР°Р·СЂРµС€РµРЅРѕ
             dataGridViewProducts_SOA.ReadOnly = false;
             dataGridViewProducts_SOA.EditMode = DataGridViewEditMode.EditOnKeystrokeOrF2;
             dataGridViewProducts_SOA.AllowUserToAddRows = false;
             dataGridViewProducts_SOA.AllowUserToDeleteRows = false;
 
-            // события для автопересчёта и защиты от ошибок ввода
+            // СЃРѕР±С‹С‚РёСЏ РґР»СЏ Р°РІС‚РѕРїРµСЂРµСЃС‡С‘С‚Р° Рё Р·Р°С‰РёС‚С‹ РѕС‚ РѕС€РёР±РѕРє РІРІРѕРґР°
             dataGridViewProducts_SOA.CellValueChanged += dataGridViewProducts_SOA_CellValueChanged;
             dataGridViewProducts_SOA.CellEndEdit += dataGridViewProducts_SOA_CellEndEdit;
             dataGridViewProducts_SOA.DataError += dataGridViewProducts_SOA_DataError;
 
-            toolStripStatusLabelInfo_SOA.Text = "Таблица товаров готова";
+            toolStripStatusLabelInfo_SOA.Text = "РўР°Р±Р»РёС†Р° С‚РѕРІР°СЂРѕРІ РіРѕС‚РѕРІР°";
         }
 
-        // ===== ОТКРЫТЬ =====
+        // ===== РћРўРљР Р«РўР¬ =====
         private void toolButtonOpen_SOA_Click(object sender, EventArgs e)
         {
             using OpenFileDialog ofd = new()
             {
                 Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*",
-                Title = "Открыть CSV"
+                Title = "РћС‚РєСЂС‹С‚СЊ CSV"
             };
 
             if (ofd.ShowDialog() != DialogResult.OK)
@@ -61,18 +62,19 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
             productsSource_SOA.DataSource = products_SOA;
 
             toolStripStatusLabelInfo_SOA.Text =
-                $"Открыт файл: {Path.GetFileName(currentFilePath_SOA)} (записей: {loaded.Count})";
+                $"РћС‚РєСЂС‹С‚ С„Р°Р№Р»: {Path.GetFileName(currentFilePath_SOA)} (Р·Р°РїРёСЃРµР№: {loaded.Count})";
         }
 
-        // ===== СОХРАНИТЬ =====
+        // ===== РЎРћРҐР РђРќРРўР¬ =====
         private void toolButtonSave_SOA_Click(object sender, EventArgs e)
         {
             dataGridViewProducts_SOA.EndEdit();
             productsSource_SOA.EndEdit();
 
+            // вњ… РёСЃРїСЂР°РІР»РµРЅРѕ: || РІРјРµСЃС‚Рѕ РїСЂРѕР±РµР»Р°
             if (products_SOA == null || products_SOA.Count == 0)
             {
-                MessageBox.Show("Нет данных для сохранения.", "Сохранение",
+                MessageBox.Show("РќРµС‚ РґР°РЅРЅС‹С… РґР»СЏ СЃРѕС…СЂР°РЅРµРЅРёСЏ.", "РЎРѕС…СЂР°РЅРµРЅРёРµ",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
@@ -82,7 +84,7 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
                 using SaveFileDialog sfd = new()
                 {
                     Filter = "CSV files (*.csv)|*.csv|All files (*.*)|*.*",
-                    Title = "Сохранить CSV",
+                    Title = "РЎРѕС…СЂР°РЅРёС‚СЊ CSV",
                     FileName = "products.csv"
                 };
 
@@ -95,15 +97,16 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
             dataService_SOA.SaveToCsv(currentFilePath_SOA, products_SOA.ToList());
 
             toolStripStatusLabelInfo_SOA.Text =
-                $"Сохранено: {Path.GetFileName(currentFilePath_SOA)} (записей: {products_SOA.Count})";
+                $"РЎРѕС…СЂР°РЅРµРЅРѕ: {Path.GetFileName(currentFilePath_SOA)} (Р·Р°РїРёСЃРµР№: {products_SOA.Count})";
         }
 
-        // ===== ОБНОВИТЬ =====
+        // ===== РћР‘РќРћР’РРўР¬ =====
         private void toolButtonRefresh_SOA_Click(object sender, EventArgs e)
         {
+            // вњ… РёСЃРїСЂР°РІР»РµРЅРѕ: || РІРјРµСЃС‚Рѕ РїСЂРѕР±РµР»Р°
             if (string.IsNullOrWhiteSpace(currentFilePath_SOA) || !File.Exists(currentFilePath_SOA))
             {
-                MessageBox.Show("Сначала открой CSV файл.", "Обновить",
+                MessageBox.Show("РЎРЅР°С‡Р°Р»Р° РѕС‚РєСЂРѕР№ CSV С„Р°Р№Р».", "РћР±РЅРѕРІРёС‚СЊ",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
@@ -113,10 +116,10 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
             productsSource_SOA.DataSource = products_SOA;
 
             toolStripStatusLabelInfo_SOA.Text =
-                $"Обновлено: {Path.GetFileName(currentFilePath_SOA)} (записей: {loaded.Count})";
+                $"РћР±РЅРѕРІР»РµРЅРѕ: {Path.GetFileName(currentFilePath_SOA)} (Р·Р°РїРёСЃРµР№: {loaded.Count})";
         }
 
-        // ===== ДЕМО =====
+        // ===== Р”Р•РњРћ =====
         private void buttonFillDemo_SOA_Click(object sender, EventArgs e)
         {
             products_SOA.Clear();
@@ -125,16 +128,107 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
                 products_SOA.Add(p);
 
             currentFilePath_SOA = string.Empty;
-            toolStripStatusLabelInfo_SOA.Text = "Загружены демонстрационные данные";
+            toolStripStatusLabelInfo_SOA.Text = "Р—Р°РіСЂСѓР¶РµРЅС‹ РґРµРјРѕРЅСЃС‚СЂР°С†РёРѕРЅРЅС‹Рµ РґР°РЅРЅС‹Рµ";
         }
-        // ===== МЕНЮ =====
+
+        // ===== Р”РћР‘РђР’РРўР¬ =====
+        private void buttonAdd_SOA_Click(object sender, EventArgs e)
+        {
+            // Р—Р°РєСЂС‹РІР°РµРј С‚РµРєСѓС‰РµРµ СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёРµ, РµСЃР»Рё Р±С‹Р»Рѕ
+            dataGridViewProducts_SOA.EndEdit();
+            productsSource_SOA.EndEdit();
+
+            string nextCode = GetNextProductCode_SOA();
+
+            var newProduct = new DataService.Product
+            {
+                ProductCode = nextCode,
+                ProductName = "РќРѕРІС‹Р№ С‚РѕРІР°СЂ",
+                Quantity = 1,
+                UnitPrice = 0,
+                Notes = ""
+                // TotalValue РѕР±С‹С‡РЅРѕ СЃС‡РёС‚Р°РµС‚СЃСЏ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё (Quantity * UnitPrice)
+            };
+
+            products_SOA.Add(newProduct);
+
+            // РІС‹РґРµР»РёРј РґРѕР±Р°РІР»РµРЅРЅСѓСЋ СЃС‚СЂРѕРєСѓ Рё РїСЂРѕРєСЂСѓС‚РёРј РІРЅРёР·
+            int rowIndex = products_SOA.Count - 1;
+            if (rowIndex >= 0)
+            {
+                dataGridViewProducts_SOA.ClearSelection();
+                dataGridViewProducts_SOA.Rows[rowIndex].Selected = true;
+                dataGridViewProducts_SOA.FirstDisplayedScrollingRowIndex = rowIndex;
+            }
+
+            productsSource_SOA.ResetBindings(false);
+            toolStripStatusLabelInfo_SOA.Text = $"Р”РѕР±Р°РІР»РµРЅ С‚РѕРІР°СЂ: {nextCode} (РЅРµ Р·Р°Р±СѓРґСЊС‚Рµ СЃРѕС…СЂР°РЅРёС‚СЊ)";
+        }
+
+        // ===== РЈР”РђР›РРўР¬ =====
+        private void buttonDelete_SOA_Click(object sender, EventArgs e)
+        {
+            dataGridViewProducts_SOA.EndEdit();
+            productsSource_SOA.EndEdit();
+
+            if (dataGridViewProducts_SOA.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Р’С‹Р±РµСЂРёС‚Рµ СЃС‚СЂРѕРєСѓ РґР»СЏ СѓРґР°Р»РµРЅРёСЏ.", "РЈРґР°Р»РµРЅРёРµ",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            int rowIndex = dataGridViewProducts_SOA.SelectedRows[0].Index;
+            if (rowIndex < 0 || rowIndex >= products_SOA.Count) return;
+
+            var p = products_SOA[rowIndex];
+
+            var result = MessageBox.Show(
+                $"РЈРґР°Р»РёС‚СЊ С‚РѕРІР°СЂ {p.ProductCode} вЂ” {p.ProductName}?",
+                "РџРѕРґС‚РІРµСЂР¶РґРµРЅРёРµ СѓРґР°Р»РµРЅРёСЏ",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (result != DialogResult.Yes) return;
+
+            products_SOA.RemoveAt(rowIndex);
+
+            productsSource_SOA.ResetBindings(false);
+            toolStripStatusLabelInfo_SOA.Text = $"РЈРґР°Р»РµРЅРѕ: {p.ProductCode} (РЅРµ Р·Р°Р±СѓРґСЊС‚Рµ СЃРѕС…СЂР°РЅРёС‚СЊ)";
+        }
+
+        // Р“РµРЅРµСЂР°С†РёСЏ СЃР»РµРґСѓСЋС‰РµРіРѕ РєРѕРґР° РІРёРґР° A01, A02...
+        private string GetNextProductCode_SOA()
+        {
+            int max = 0;
+
+            foreach (var p in products_SOA)
+            {
+                if (p?.ProductCode == null) continue;
+
+                string code = p.ProductCode.Trim();
+                if (code.Length < 2) continue;
+
+                // РѕР¶РёРґР°РµРј С„РѕСЂРјР°С‚ A01
+                if (code[0] != 'A' && code[0] != 'a') continue;
+
+                string numPart = code.Substring(1);
+                if (int.TryParse(numPart, out int n))
+                    if (n > max) max = n;
+            }
+
+            int next = max + 1;
+            return "A" + next.ToString("00");
+        }
+
+        // ===== РњР•РќР® =====
         private void menuItemExit_SOA_Click(object sender, EventArgs e) => Close();
 
         private void menuItemAbout_SOA_Click(object sender, EventArgs e)
         {
             MessageBox.Show(
-                "Оптовая база (Sprint 7)\nХранение данных в CSV\n\nРазработчик: SOA",
-                "О программе",
+                "РћРїС‚РѕРІР°СЏ Р±Р°Р·Р° (Sprint 7)\nРҐСЂР°РЅРµРЅРёРµ РґР°РЅРЅС‹С… РІ CSV\n\nР Р°Р·СЂР°Р±РѕС‚С‡РёРє: SOA",
+                "Рћ РїСЂРѕРіСЂР°РјРјРµ",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
         }
@@ -142,13 +236,13 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
         private void menuItemHelp_SOA_Click(object sender, EventArgs e)
         {
             MessageBox.Show(
-                "Приложение предназначено для управления товарами.\nРабота с CSV файлами.",
-                "Руководство пользователя",
+                "РџСЂРёР»РѕР¶РµРЅРёРµ РїСЂРµРґРЅР°Р·РЅР°С‡РµРЅРѕ РґР»СЏ СѓРїСЂР°РІР»РµРЅРёСЏ С‚РѕРІР°СЂР°РјРё.\nР Р°Р±РѕС‚Р° СЃ CSV С„Р°Р№Р»Р°РјРё.",
+                "Р СѓРєРѕРІРѕРґСЃС‚РІРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
         }
 
-        // ===== ТАБЛИЦА =====
+        // ===== РўРђР‘Р›РР¦Рђ =====
         private void SetupProductsGrid_SOA()
         {
             dataGridViewProducts_SOA.AutoGenerateColumns = false;
@@ -158,7 +252,7 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
 
             dataGridViewProducts_SOA.Columns.Add(new DataGridViewTextBoxColumn
             {
-                HeaderText = "Код",
+                HeaderText = "РљРѕРґ",
                 DataPropertyName = nameof(DataService.Product.ProductCode),
                 Width = 90,
                 ReadOnly = true
@@ -166,7 +260,7 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
 
             dataGridViewProducts_SOA.Columns.Add(new DataGridViewTextBoxColumn
             {
-                HeaderText = "Название",
+                HeaderText = "РќР°Р·РІР°РЅРёРµ",
                 DataPropertyName = nameof(DataService.Product.ProductName),
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
                 MinimumWidth = 200
@@ -174,21 +268,21 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
 
             dataGridViewProducts_SOA.Columns.Add(new DataGridViewTextBoxColumn
             {
-                HeaderText = "Кол-во",
+                HeaderText = "РљРѕР»-РІРѕ",
                 DataPropertyName = nameof(DataService.Product.Quantity),
                 Width = 80
             });
 
             dataGridViewProducts_SOA.Columns.Add(new DataGridViewTextBoxColumn
             {
-                HeaderText = "Цена",
+                HeaderText = "Р¦РµРЅР°",
                 DataPropertyName = nameof(DataService.Product.UnitPrice),
                 Width = 90
             });
 
             dataGridViewProducts_SOA.Columns.Add(new DataGridViewTextBoxColumn
             {
-                HeaderText = "Примечание",
+                HeaderText = "РџСЂРёРјРµС‡Р°РЅРёРµ",
                 DataPropertyName = nameof(DataService.Product.Notes),
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
                 MinimumWidth = 200
@@ -196,16 +290,17 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
 
             dataGridViewProducts_SOA.Columns.Add(new DataGridViewTextBoxColumn
             {
-                HeaderText = "Сумма",
+                HeaderText = "РЎСѓРјРјР°",
                 DataPropertyName = nameof(DataService.Product.TotalValue),
                 Width = 110,
                 ReadOnly = true
             });
         }
+
+        // ===== РђР’РўРћРџР•Р Р•РЎР§Р•Рў / РЎРћР‘Р«РўРРЇ =====
         private void dataGridViewProducts_SOA_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0) return;
-
             productsSource_SOA.ResetBindings(false);
         }
 
@@ -216,20 +311,19 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
             productsSource_SOA.EndEdit();
             productsSource_SOA.ResetBindings(false);
 
-            toolStripStatusLabelInfo_SOA.Text = "Изменения внесены (не забудьте сохранить)";
+            toolStripStatusLabelInfo_SOA.Text = "РР·РјРµРЅРµРЅРёСЏ РІРЅРµСЃРµРЅС‹ (РЅРµ Р·Р°Р±СѓРґСЊС‚Рµ СЃРѕС…СЂР°РЅРёС‚СЊ)";
         }
 
         private void dataGridViewProducts_SOA_DataError(object sender, DataGridViewDataErrorEventArgs e)
         {
             MessageBox.Show(
-                "Некорректное значение. Проверьте ввод числа (кол-во или цена).",
-                "Ошибка ввода",
+                "РќРµРєРѕСЂСЂРµРєС‚РЅРѕРµ Р·РЅР°С‡РµРЅРёРµ. РџСЂРѕРІРµСЂСЊС‚Рµ РІРІРѕРґ С‡РёСЃР»Р° (РєРѕР»-РІРѕ РёР»Рё С†РµРЅР°).",
+                "РћС€РёР±РєР° РІРІРѕРґР°",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Warning
             );
 
             e.ThrowException = false;
         }
-       
     }
 }

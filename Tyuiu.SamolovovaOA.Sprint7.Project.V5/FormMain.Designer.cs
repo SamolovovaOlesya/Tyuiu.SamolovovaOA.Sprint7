@@ -42,6 +42,8 @@
         private System.Windows.Forms.DataGridView dataGridViewProducts_SOA;
         private System.Windows.Forms.Panel panelProductsActions_SOA;
         private System.Windows.Forms.Button buttonFillDemo_SOA;
+        private System.Windows.Forms.Button buttonAdd_SOA;
+        private System.Windows.Forms.Button buttonDelete_SOA;
 
         protected override void Dispose(bool disposing)
         {
@@ -50,13 +52,15 @@
             base.Dispose(disposing);
         }
 
-        private void InitializeComponent()    
+        private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
 
             dataGridViewProducts_SOA = new System.Windows.Forms.DataGridView();
             panelProductsActions_SOA = new System.Windows.Forms.Panel();
             buttonFillDemo_SOA = new System.Windows.Forms.Button();
+            buttonAdd_SOA = new System.Windows.Forms.Button();
+            buttonDelete_SOA = new System.Windows.Forms.Button();
 
             menuMain_SOA = new System.Windows.Forms.MenuStrip();
 
@@ -103,7 +107,6 @@
 
             menuItemHelp_SOA.Text = "Руководство пользователя";
             menuItemHelp_SOA.Click += menuItemHelp_SOA_Click;
-
             menuItemAbout_SOA.Text = "О программе";
             menuItemAbout_SOA.Click += menuItemAbout_SOA_Click;
 
@@ -118,6 +121,7 @@
                 toolButtonSave_SOA,
                 toolButtonRefresh_SOA
             });
+
             toolButtonOpen_SOA.Text = "Открыть";
             toolButtonOpen_SOA.Click += toolButtonOpen_SOA_Click;
 
@@ -158,7 +162,25 @@
             buttonFillDemo_SOA.Top = 12;
             buttonFillDemo_SOA.Click += buttonFillDemo_SOA_Click;
 
+            buttonAdd_SOA.Text = "Добавить";
+            buttonAdd_SOA.Name = "buttonAdd_SOA";
+            buttonAdd_SOA.Width = 120;
+            buttonAdd_SOA.Height = 30;
+            buttonAdd_SOA.Left = buttonFillDemo_SOA.Left + buttonFillDemo_SOA.Width + 10;
+            buttonAdd_SOA.Top = 12;
+            buttonAdd_SOA.Click += buttonAdd_SOA_Click;
+
+            buttonDelete_SOA.Text = "Удалить";
+            buttonDelete_SOA.Name = "buttonDelete_SOA";
+            buttonDelete_SOA.Width = 120;
+            buttonDelete_SOA.Height = 30;
+            buttonDelete_SOA.Left = buttonAdd_SOA.Left + buttonAdd_SOA.Width + 10;
+            buttonDelete_SOA.Top = 12;
+            buttonDelete_SOA.Click += buttonDelete_SOA_Click;
+
             panelProductsActions_SOA.Controls.Add(buttonFillDemo_SOA);
+            panelProductsActions_SOA.Controls.Add(buttonAdd_SOA);
+            panelProductsActions_SOA.Controls.Add(buttonDelete_SOA);
 
             this.Text = "Оптовая база";
             this.ClientSize = new System.Drawing.Size(1000, 600);
@@ -173,8 +195,6 @@
 
             this.Load += FormMain_Load;
             this.MainMenuStrip = menuMain_SOA;
-
-
         }
     }
 }
