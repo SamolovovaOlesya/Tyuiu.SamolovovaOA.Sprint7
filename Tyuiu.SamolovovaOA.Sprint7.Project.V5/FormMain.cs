@@ -9,15 +9,19 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
 {
     public partial class FormMain : Form
     {
-        private BindingList<DataService.Product> products_SOA = new();
+        // Полный список (сохраняем в CSV именно его)
+        private List<DataService.Product> productsAll_SOA = new();
+
+        // То, что показываем в таблице (может быть отфильтровано)
+        private BindingList<DataService.Product> productsView_SOA = new();
         private BindingSource productsSource_SOA = new();
+
         private DataService dataService_SOA = new();
         private string currentFilePath_SOA = string.Empty;
 
         public FormMain()
         {
             InitializeComponent();
-
             Text = "Оптовая база — управление товарами";
             toolStripStatusLabelInfo_SOA.Text = "Готово";
         }
@@ -26,21 +30,25 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
         {
             SetupProductsGrid_SOA();
 
-            productsSource_SOA.DataSource = products_SOA;
+            productsSource_SOA.DataSource = productsView_SOA;
             dataGridViewProducts_SOA.DataSource = productsSource_SOA;
 
-            // редактирование разрешено
+            // Редактирование
             dataGridViewProducts_SOA.ReadOnly = false;
             dataGridViewProducts_SOA.EditMode = DataGridViewEditMode.EditOnKeystrokeOrF2;
             dataGridViewProducts_SOA.AllowUserToAddRows = false;
             dataGridViewProducts_SOA.AllowUserToDeleteRows = false;
 
-            // события для автопересчёта и защиты от ошибок ввода
+            // Автоперерисовка суммы + защита ввода
             dataGridViewProducts_SOA.CellValueChanged += dataGridViewProducts_SOA_CellValueChanged;
             dataGridViewProducts_SOA.CellEndEdit += dataGridViewProducts_SOA_CellEndEdit;
             dataGridViewProducts_SOA.DataError += dataGridViewProducts_SOA_DataError;
 
-            toolStripStatusLabelInfo_SOA.Text = "Таблица товаров готова";
+            // Поиск/фильтр
+            textBoxSearch_SOA.TextChanged += (s, ev) => ApplyFilter_SOA();
+            checkBoxInStock_SOA.CheckedChanged += (s, ev) => ApplyFilter_SOA();
+
+            ApplyFilter_SOA();
         }
 
         // ===== ОТКРЫТЬ =====
@@ -57,12 +65,11 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
 
             currentFilePath_SOA = ofd.FileName;
 
-            var loaded = dataService_SOA.LoadFromCsv(currentFilePath_SOA);
-            products_SOA = new BindingList<DataService.Product>(loaded);
-            productsSource_SOA.DataSource = products_SOA;
+            productsAll_SOA = dataService_SOA.LoadFromCsv(currentFilePath_SOA);
+            ApplyFilter_SOA();
 
             toolStripStatusLabelInfo_SOA.Text =
-                $"Открыт файл: {Path.GetFileName(currentFilePath_SOA)} (записей: {loaded.Count})";
+                $"Открыт файл: {Path.GetFileName(currentFilePath_SOA)} (записей: {productsAll_SOA.Count})";
         }
 
         // ===== СОХРАНИТЬ =====
@@ -71,8 +78,7 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
             dataGridViewProducts_SOA.EndEdit();
             productsSource_SOA.EndEdit();
 
-            // ✅ исправлено: || вместо пробела
-            if (products_SOA == null || products_SOA.Count == 0)
+            if (productsAll_SOA == null || productsAll_SOA.Count == 0)
             {
                 MessageBox.Show("Нет данных для сохранения.", "Сохранение",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -94,16 +100,15 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
                 currentFilePath_SOA = sfd.FileName;
             }
 
-            dataService_SOA.SaveToCsv(currentFilePath_SOA, products_SOA.ToList());
+            dataService_SOA.SaveToCsv(currentFilePath_SOA, productsAll_SOA);
 
             toolStripStatusLabelInfo_SOA.Text =
-                $"Сохранено: {Path.GetFileName(currentFilePath_SOA)} (записей: {products_SOA.Count})";
+                $"Сохранено: {Path.GetFileName(currentFilePath_SOA)} (записей: {productsAll_SOA.Count})";
         }
 
         // ===== ОБНОВИТЬ =====
         private void toolButtonRefresh_SOA_Click(object sender, EventArgs e)
         {
-            // ✅ исправлено: || вместо пробела
             if (string.IsNullOrWhiteSpace(currentFilePath_SOA) || !File.Exists(currentFilePath_SOA))
             {
                 MessageBox.Show("Сначала открой CSV файл.", "Обновить",
@@ -111,30 +116,29 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
                 return;
             }
 
-            var loaded = dataService_SOA.LoadFromCsv(currentFilePath_SOA);
-            products_SOA = new BindingList<DataService.Product>(loaded);
-            productsSource_SOA.DataSource = products_SOA;
+            productsAll_SOA = dataService_SOA.LoadFromCsv(currentFilePath_SOA);
+            ApplyFilter_SOA();
 
             toolStripStatusLabelInfo_SOA.Text =
-                $"Обновлено: {Path.GetFileName(currentFilePath_SOA)} (записей: {loaded.Count})";
+                $"Обновлено: {Path.GetFileName(currentFilePath_SOA)} (записей: {productsAll_SOA.Count})";
         }
 
         // ===== ДЕМО =====
         private void buttonFillDemo_SOA_Click(object sender, EventArgs e)
         {
-            products_SOA.Clear();
-
-            foreach (var p in dataService_SOA.GetDemoProducts())
-                products_SOA.Add(p);
-
+            productsAll_SOA = dataService_SOA.GetDemoProducts().ToList();
             currentFilePath_SOA = string.Empty;
+
+            textBoxSearch_SOA.Text = "";
+            checkBoxInStock_SOA.Checked = false;
+
+            ApplyFilter_SOA();
             toolStripStatusLabelInfo_SOA.Text = "Загружены демонстрационные данные";
         }
 
         // ===== ДОБАВИТЬ =====
         private void buttonAdd_SOA_Click(object sender, EventArgs e)
         {
-            // Закрываем текущее редактирование, если было
             dataGridViewProducts_SOA.EndEdit();
             productsSource_SOA.EndEdit();
 
@@ -147,21 +151,12 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
                 Quantity = 1,
                 UnitPrice = 0,
                 Notes = ""
-                // TotalValue обычно считается автоматически (Quantity * UnitPrice)
             };
 
-            products_SOA.Add(newProduct);
+            productsAll_SOA.Add(newProduct);
+            ApplyFilter_SOA();
+            SelectProductInGrid_SOA(newProduct);
 
-            // выделим добавленную строку и прокрутим вниз
-            int rowIndex = products_SOA.Count - 1;
-            if (rowIndex >= 0)
-            {
-                dataGridViewProducts_SOA.ClearSelection();
-                dataGridViewProducts_SOA.Rows[rowIndex].Selected = true;
-                dataGridViewProducts_SOA.FirstDisplayedScrollingRowIndex = rowIndex;
-            }
-
-            productsSource_SOA.ResetBindings(false);
             toolStripStatusLabelInfo_SOA.Text = $"Добавлен товар: {nextCode} (не забудьте сохранить)";
         }
 
@@ -171,17 +166,13 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
             dataGridViewProducts_SOA.EndEdit();
             productsSource_SOA.EndEdit();
 
-            if (dataGridViewProducts_SOA.SelectedRows.Count == 0)
+            if (dataGridViewProducts_SOA.CurrentRow == null ||
+                dataGridViewProducts_SOA.CurrentRow.DataBoundItem is not DataService.Product p)
             {
                 MessageBox.Show("Выберите строку для удаления.", "Удаление",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
-
-            int rowIndex = dataGridViewProducts_SOA.SelectedRows[0].Index;
-            if (rowIndex < 0 || rowIndex >= products_SOA.Count) return;
-
-            var p = products_SOA[rowIndex];
 
             var result = MessageBox.Show(
                 $"Удалить товар {p.ProductCode} — {p.ProductName}?",
@@ -191,34 +182,18 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
 
             if (result != DialogResult.Yes) return;
 
-            products_SOA.RemoveAt(rowIndex);
+            productsAll_SOA.Remove(p);
+            ApplyFilter_SOA();
 
-            productsSource_SOA.ResetBindings(false);
             toolStripStatusLabelInfo_SOA.Text = $"Удалено: {p.ProductCode} (не забудьте сохранить)";
         }
 
-        // Генерация следующего кода вида A01, A02...
-        private string GetNextProductCode_SOA()
+        // ===== СБРОС =====
+        private void buttonResetFilters_SOA_Click(object sender, EventArgs e)
         {
-            int max = 0;
-
-            foreach (var p in products_SOA)
-            {
-                if (p?.ProductCode == null) continue;
-
-                string code = p.ProductCode.Trim();
-                if (code.Length < 2) continue;
-
-                // ожидаем формат A01
-                if (code[0] != 'A' && code[0] != 'a') continue;
-
-                string numPart = code.Substring(1);
-                if (int.TryParse(numPart, out int n))
-                    if (n > max) max = n;
-            }
-
-            int next = max + 1;
-            return "A" + next.ToString("00");
+            textBoxSearch_SOA.Text = "";
+            checkBoxInStock_SOA.Checked = false;
+            ApplyFilter_SOA();
         }
 
         // ===== МЕНЮ =====
@@ -236,7 +211,9 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
         private void menuItemHelp_SOA_Click(object sender, EventArgs e)
         {
             MessageBox.Show(
-                "Приложение предназначено для управления товарами.\nРабота с CSV файлами.",
+                "Открыть — загрузить CSV\nСохранить — записать CSV\nОбновить — перечитать файл\n" +
+                "Демо — тестовые данные\nДобавить/Удалить — работа со строками\n" +
+                "Поиск + В наличии — фильтрация",
                 "Руководство пользователя",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
@@ -246,12 +223,11 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
         private void SetupProductsGrid_SOA()
         {
             dataGridViewProducts_SOA.AutoGenerateColumns = false;
-            dataGridViewProducts_SOA.AllowUserToAddRows = false;
-            dataGridViewProducts_SOA.RowHeadersVisible = false;
             dataGridViewProducts_SOA.Columns.Clear();
 
             dataGridViewProducts_SOA.Columns.Add(new DataGridViewTextBoxColumn
             {
+                Name = "columnProductCode_SOA",
                 HeaderText = "Код",
                 DataPropertyName = nameof(DataService.Product.ProductCode),
                 Width = 90,
@@ -260,6 +236,7 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
 
             dataGridViewProducts_SOA.Columns.Add(new DataGridViewTextBoxColumn
             {
+                Name = "columnProductName_SOA",
                 HeaderText = "Название",
                 DataPropertyName = nameof(DataService.Product.ProductName),
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
@@ -268,6 +245,7 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
 
             dataGridViewProducts_SOA.Columns.Add(new DataGridViewTextBoxColumn
             {
+                Name = "columnQuantity_SOA",
                 HeaderText = "Кол-во",
                 DataPropertyName = nameof(DataService.Product.Quantity),
                 Width = 80
@@ -275,6 +253,7 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
 
             dataGridViewProducts_SOA.Columns.Add(new DataGridViewTextBoxColumn
             {
+                Name = "columnUnitPrice_SOA",
                 HeaderText = "Цена",
                 DataPropertyName = nameof(DataService.Product.UnitPrice),
                 Width = 90
@@ -282,6 +261,7 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
 
             dataGridViewProducts_SOA.Columns.Add(new DataGridViewTextBoxColumn
             {
+                Name = "columnNotes_SOA",
                 HeaderText = "Примечание",
                 DataPropertyName = nameof(DataService.Product.Notes),
                 AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill,
@@ -290,6 +270,7 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
 
             dataGridViewProducts_SOA.Columns.Add(new DataGridViewTextBoxColumn
             {
+                Name = "columnTotalValue_SOA",
                 HeaderText = "Сумма",
                 DataPropertyName = nameof(DataService.Product.TotalValue),
                 Width = 110,
@@ -297,7 +278,47 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
             });
         }
 
-        // ===== АВТОПЕРЕСЧЕТ / СОБЫТИЯ =====
+        // ===== ФИЛЬТР =====
+        private void ApplyFilter_SOA()
+        {
+            IEnumerable<DataService.Product> query = productsAll_SOA;
+
+            string q = (textBoxSearch_SOA.Text ?? "").Trim();
+            if (!string.IsNullOrWhiteSpace(q))
+            {
+                query = query.Where(p =>
+                    (p.ProductCode ?? "").Contains(q, StringComparison.OrdinalIgnoreCase) ||
+                    (p.ProductName ?? "").Contains(q, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (checkBoxInStock_SOA.Checked)
+                query = query.Where(p => p.Quantity > 0);
+
+            var filtered = query.ToList();
+
+            productsView_SOA = new BindingList<DataService.Product>(filtered);
+            productsSource_SOA.DataSource = productsView_SOA;
+            productsSource_SOA.ResetBindings(false);
+
+            labelFound_SOA.Text = $"Найдено: {filtered.Count} из {productsAll_SOA.Count}";
+        }
+
+        private void SelectProductInGrid_SOA(DataService.Product product)
+        {
+            for (int i = 0; i < dataGridViewProducts_SOA.Rows.Count; i++)
+            {
+                if (dataGridViewProducts_SOA.Rows[i].DataBoundItem == product)
+                {
+                    dataGridViewProducts_SOA.ClearSelection();
+                    dataGridViewProducts_SOA.Rows[i].Selected = true;
+                    dataGridViewProducts_SOA.CurrentCell = dataGridViewProducts_SOA.Rows[i].Cells[1];
+                    dataGridViewProducts_SOA.FirstDisplayedScrollingRowIndex = i;
+                    break;
+                }
+            }
+        }
+
+        // ===== АВТОСУММА/ОШИБКИ =====
         private void dataGridViewProducts_SOA_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0) return;
@@ -307,10 +328,8 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
         private void dataGridViewProducts_SOA_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0) return;
-
             productsSource_SOA.EndEdit();
             productsSource_SOA.ResetBindings(false);
-
             toolStripStatusLabelInfo_SOA.Text = "Изменения внесены (не забудьте сохранить)";
         }
 
@@ -320,10 +339,27 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
                 "Некорректное значение. Проверьте ввод числа (кол-во или цена).",
                 "Ошибка ввода",
                 MessageBoxButtons.OK,
-                MessageBoxIcon.Warning
-            );
+                MessageBoxIcon.Warning);
 
             e.ThrowException = false;
+        }
+
+        // ===== КОД A01, A02... =====
+        private string GetNextProductCode_SOA()
+        {
+            int max = 0;
+
+            foreach (var p in productsAll_SOA)
+            {
+                string code = p?.ProductCode?.Trim() ?? "";
+                if (code.Length < 2) continue;
+                if (code[0] != 'A' && code[0] != 'a') continue;
+
+                if (int.TryParse(code.Substring(1), out int n))
+                    if (n > max) max = n;
+            }
+
+            return "A" + (max + 1).ToString("00");
         }
     }
 }
