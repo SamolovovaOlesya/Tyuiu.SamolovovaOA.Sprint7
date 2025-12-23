@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.ComponentModel;
 using System.Windows.Forms;
 using Tyuiu.SamolovovaOA.Sprint7.Project.V5.Lib;
 
@@ -16,7 +17,7 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5
         private BindingList<DataService.Product> productsView_SOA = new();
         private BindingSource productsSource_SOA = new();
 
-        private DataService dataService_SOA = new();
+        private readonly DataService dataService_SOA = new();
         private string currentFilePath_SOA = string.Empty;
 
         public FormMain()
