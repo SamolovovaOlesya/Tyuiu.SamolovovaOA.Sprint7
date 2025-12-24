@@ -1,15 +1,16 @@
-﻿using Tyuiu.SamolovovaOA.Sprint7.Project.V5.Lib;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
+using Tyuiu.SamolovovaOA.Sprint7.Project.V5.Lib;
 namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5.Test
 {
     [TestClass]
     public sealed class DataServiceTest
     {
-        [TestMethod]
         private DataService GetService() => new DataService();
 
         private List<DataService.Product> GetDemoData() => new()
         {
-            new DataService.Product 
+            new DataService.Product
             {
                 ProductCode = "P1",
                 ProductName = "Сахар",
@@ -32,7 +33,7 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5.Test
             }
         };
 
-        [TestMethod] 
+        [TestMethod]
         public void Search_ShouldFindByName()
         {
             var ds = GetService();
@@ -63,7 +64,7 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5.Test
 
             var result = ds.SortByTotalValueDesc(data);
 
-            Assert.AreEqual("P1", result[0].ProductCode);  
+            Assert.AreEqual("P1", result[0].ProductCode);
         }
 
         [TestMethod]

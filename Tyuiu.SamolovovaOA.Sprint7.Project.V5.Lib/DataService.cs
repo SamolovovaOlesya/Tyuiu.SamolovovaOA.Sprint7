@@ -1,21 +1,24 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
 
 namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5.Lib
 {
     public class DataService
     {
-        public class Product
+        public class Product 
         {
             public string ProductCode { get; set; } = "";
             public string ProductName { get; set; } = "";
             public int Quantity { get; set; }
-            public decimal UnitPrice { get; set; } 
+            public decimal UnitPrice { get; set; }
             public string Notes { get; set; } = "";
 
             public decimal TotalValue => Quantity * UnitPrice;
         }
 
-        
         public List<Product> LoadFromCsv(string filePath)
         {
             var result = new List<Product>();
@@ -25,11 +28,10 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5.Lib
 
             var lines = File.ReadAllLines(filePath);
 
-            for (int i = 1; i < lines.Length; i++) 
+            for (int i = 1; i < lines.Length; i++)
             {
                 var parts = lines[i].Split(';');
                 if (parts.Length < 5) continue;
-
                 if (!int.TryParse(parts[2], out int qty)) continue;
                 if (!decimal.TryParse(parts[3], NumberStyles.Any, CultureInfo.InvariantCulture, out decimal price)) continue;
 
@@ -63,9 +65,9 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5.Lib
             }
 
             File.WriteAllLines(filePath, lines);
-        } 
+        }
 
-        
+
         public List<Product> Search(List<Product> products, string query)
         {
             if (string.IsNullOrWhiteSpace(query))
@@ -73,28 +75,22 @@ namespace Tyuiu.SamolovovaOA.Sprint7.Project.V5.Lib
 
             query = query.ToLower();
 
-            return products
-                .Where(p =>
-                    p.ProductCode.ToLower().Contains(query) ||
-                    p.ProductName.ToLower().Contains(query))
-                .ToList();
+            return products.Where(p => p.ProductCode.ToLower().Contains(query) ||p.ProductName.ToLower().Contains(query)).ToList();
         }
 
- 
         public List<Product> FilterByMinQuantity(List<Product> products, int minQty)
         {
             return products.Where(p => p.Quantity >= minQty).ToList();
         }
 
-        
+
         public List<Product> SortByTotalValueDesc(List<Product> products)
         {
             return products.OrderByDescending(p => p.TotalValue).ToList();
         }
 
 
-        public (int Count, int QtySum, double QtyAvg, int QtyMin, int QtyMax, decimal ValueSum)
-            CalculateStatistics(List<Product> products)
+        public (int Count, int QtySum, double QtyAvg, int QtyMin, int QtyMax, decimal ValueSum) CalculateStatistics(List<Product> products)
         {
             if (products.Count == 0)
                 return (0, 0, 0, 0, 0, 0);
